@@ -4,8 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Quiz!</title>
+    <style>
+        body {
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #landing {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .btn {
+            background: violet;
+            padding: 40px;
+            font-size: 40px;
+            border: 2px dotted black;
+            color: black;
+            cursor: pointer;
+        }
+
+        #questions {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            
+        }
+    </style>
 </head>
 <body>
-    
+    <div id="container">
+        <div id="landing">
+            <div>
+                <button class="btn" id="start-btn">Start Quiz</button>
+            </div>
+        </div>
+        <div id="ending">
+            <div>
+                <button class="btn" id="start-btn">Play Again?</button>
+            </div>
+        </div>
+            <div id="question-text">
+            <div id="choices"></div>
+        </div>
+    </div>
+
+
+
+
+
+
+<script src="./script.js"></script>
 </body>
 </html>
