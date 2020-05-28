@@ -7,56 +7,56 @@ var questionTextEl = document.querySelector('#question-text')
 var question = {
     text: "How old is Javascript in years?",
     choices: [
-        10,
         15,
+        20,
         5,
         25
     ],
-    answer: 3
+    answer: 3 
 };
 
 var question = {
-    text: "How old is Javascript in years?",
+    text: "What does the variable i in for loops stand for?",
     choices: [
-        10,
-        15,
-        5,
-        25
+        "an isometric variable",
+        "a variable that assumes the values of the elements of an iterable object",
+        "an isolated variable",
+        "a variable that returns an if else statement"
     ],
-    answer: 3
+    answer: 1 
 };
 
 var question = {
-    text: "How old is Javascript in years?",
+    text: "What does JSON stand for?",
     choices: [
-        10,
-        15,
-        5,
-        25
+        "JavaScript Object Notation",
+        "Jasper Smith Opera Nolensville",
+        "Joint Script Order Number",
+        "Just Some Odd News"
     ],
-    answer: 3
+    answer: 0 
 };
 
 var question = {
-    text: "How old is Javascript in years?",
+    text: "What does CSS stand for?",
     choices: [
-        10,
-        15,
-        5,
-        25
+        "Cansei der Sexy",
+        "Cascading Style Sheet",
+        "Count Susan Sarandon",
+        "Cancel Student Submissions"        
     ],
-    answer: 3
+    answer: 1 
 };
 
 var question = {
-    text: "How old is Javascript in years?",
+    text: "What is the best programming language out there?",
     choices: [
-        10,
-        15,
-        5,
-        25
+        "Python",
+        "Java",
+        "C++",
+        "C#"
     ],
-    answer: 3
+    answer: 0 
 };
 
 choicesEl.addEventListener("click", function(event) {
