@@ -1,5 +1,5 @@
-var startBtn = document.querySelector("#start-btn");
-var landingEl = document.querySelector("#landing");
+var startBtn = document.querySelector('#start-btn');
+var landingEl = document.querySelector('#landing');
 var questionEl = document.querySelector('#questions');
 var choicesEl = document.querySelector('#choices');
 var questionTextEl = document.querySelector('#question-text')
