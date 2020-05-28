@@ -1,130 +1,204 @@
-var startBtn = document.querySelector('#start-btn');
-var playAgainBtn = document.querySelector('#playAgain-btn');
-var landingEl = document.querySelector('#landing');
-var endingEl = document.querySelector('#ending');
-var questionEl = document.querySelector('#questions');
-var choicesEl = document.querySelector('#choices');
-var questionTextEl = document.querySelector('#question-text')
-var timerEl = document.querySelector('#timer')
-
-
-var questions =
-    [
-        {
-            text: "How old is Javascript in years?",
-            choices: [
-                15,
-                20,
-                5,
-                25
-            ],
-            answer: 3
-        },
-        {
-            text: "What does the variable i in for loops stand for?",
-            choices: [
-                "an isometric variable",
-                "a variable that assumes the values of the elements of an iterable object",
-                "an isolated variable",
-                "a variable that returns an if else statement"
-            ],
-            answer: 1
-        },
-        {
-            text: "What does JSON stand for?",
-            choices: [
-                "JavaScript Object Notation",
-                "Jasper Smith Opera Nolensville",
-                "Joint Script Order Number",
-                "Just Some Odd News"
-            ],
-            answer: 0
-        },
-        {
-            text: "What does CSS stand for?",
-            choices: [
-                "Cansei der Sexy",
-                "Cascading Style Sheet",
-                "Count Susan Sarandon",
-                "Cancel Student Submissions"
-            ],
-            answer: 1
-        },
-        {
-            text: "What is the best programming language out there?",
-            choices: [
-                "Python",
-                "Java",
-                "C++",
-                "C#"
-            ],
-            answer: 0
-        },
-    ];
-
-choicesEl.addEventListener("click", function (event) {
-    var element = event.target;
-    var question = questions[cursor]
-    if (element.getAttribute("class") === "item") {
-        console.log("Make sure this is item");
-        var id = parseInt(element.getAttribute("data-id"));
-        if (question.answer === id) {
-            console.log("Correct answer!")
-            score++;
-        } else {
-            console.log("Incorrect answer!")
-            timeLeft--;
+function initQuiz() {
+    //  Initialize "time remaining" variable
+        let timeRemaining=0;
+    
+        
+    //  Clicking the "Start Quiz" button starts the quiz, hides the landing container, and displays the quiz container
+        const startButtonEl = document.getElementById("start-button");
+        const timeRemainingEl = document.getElementById("time-remaining");
+        const finalScoreEl = document.getElementById("final-score");
+        const numQuestions = questions.length;
+        const landingContainerEl = document.getElementById("landing-container");
+        const quizContainerEl = document.getElementById("quiz-container");
+        const finalContainerEl = document.getElementById("final-container");
+        const submitButtonEl = document.getElementById("submit-initials");
+        const highscoreButtonEl = document.getElementById("highscore-button");
+        const highscoreContainerEl = document.getElementById("highscore-container");
+        let highScores = [];
+            //  Method to store and retrieve arrays in/from local storage obtained from https://stackoverflow.com/questions/3357553/how-do-i-store-an-array-in-localstorage
+        if (JSON.parse(localStorage.getItem('scores')) !== null) {
+            highScores = JSON.parse(localStorage.getItem("scores"));
         }
-        cursor++;
-        console.log('SCORE', score)
-        renderQuestionData();
+    
+        function startQuiz() {
+            
+            
+            landingContainerEl.setAttribute("class","container d-none");
+            let rowEl = null;
+            let colEl = null;
+            let headerEl = null;
+            let buttonEl = null;
+            quizContainerEl.setAttribute("class","container");
+            let currentQuestion = 1;
+            let score = 0;
+    //  Upon starting the quiz, the time remaining variable is assigned a value equal to 15 seconds * the number of questions and starts decreasing by 1 each second
+            timeRemaining=numQuestions * 15;
+            timeRemainingEl.setAttribute("value",timeRemaining);
+            //  Method for stopping the interval once it has started obtained from https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Timeouts_and_intervals
+            let myInterval = setInterval(function() {
+                if (timeRemaining<1) {
+                    clearInterval(myInterval);
+                    //  When the final question is answered or the timer reaches zero, the quiz container is hidden and the score container is displayed, where the user enters their initials
+                    quizContainerEl.setAttribute("class","container d-none");
+                    finalContainerEl.setAttribute("class","container");
+                    return;
+                }
+                timeRemaining = timeRemaining - 1;
+                timeRemainingEl.setAttribute("value",timeRemaining);
+            },1000);
+            let clickTimeout = false;
+            function generateQuestion(questionNum) {
+                //  During the quiz, the header has the current question, and the answer buttons have the possible answers for that question
+                quizContainerEl.innerHTML = "";
+                rowEl = document.createElement("div");
+                rowEl.setAttribute("class","row");
+                quizContainerEl.append(rowEl);
+
+                colEl = document.createElement("div");
+                colEl.setAttribute("class","col-0 col-sm-2");
+                rowEl.append(colEl);
+
+                colEl = document.createElement("div");
+                colEl.setAttribute("class","col-12 col-sm-8");
+                rowEl.append(colEl);
+
+                colEl = document.createElement("div");
+                colEl.setAttribute("class","col-0 col-sm-2");
+                rowEl.append(colEl);
+
+                colEl = rowEl.children[1];
+                rowEl = document.createElement("div");
+                rowEl.setAttribute("class","row mb-3");
+                colEl.append(rowEl);
+
+                colEl = document.createElement("div");
+                colEl.setAttribute("class","col-12");
+                rowEl.append(colEl);
+
+                headerEl = document.createElement("h2");
+                headerEl.innerHTML = questions[questionNum-1].title;
+                colEl.append(headerEl);
+
+                colEl = quizContainerEl.children[0].children[1];
+                for (let i=0; i<4; i++) {
+                    let rowEl = document.createElement("div");
+                    rowEl.setAttribute("class","row mb-1");
+                    colEl.append(rowEl);
+
+                    let colEl2 = document.createElement("div");
+                    colEl2.setAttribute("class","col-12");
+                    rowEl.append(colEl2);
+
+                    buttonEl = document.createElement("button");
+                    buttonEl.setAttribute("class","btn btn-primary");
+                    buttonEl.setAttribute("type","button");
+                    buttonEl.innerHTML = questions[currentQuestion-1].choices[i];
+                    colEl2.append(buttonEl);
+                    buttonEl.addEventListener("click",function(){
+                        //  When the user clicks one of the answer buttons, if it is the correct answer, the message "Correct" is displayed, and if not, the message "Incorrect" is displayed and 15 seconds deducted from the timer
+                        if (clickTimeout) {
+                            return;
+                        }
+                        clickTimeout = true;
+                        clearInterval(myInterval);
+                        let colEl = quizContainerEl.children[0].children[1];
+                        let rowEl = document.createElement("div");
+                        rowEl.setAttribute("class","row border-top");
+                        colEl.append(rowEl);
+
+                        colEl = document.createElement("div");
+                        colEl.setAttribute("class","col-12");
+                        rowEl.append(colEl);
+
+                        let parEl = document.createElement("p");
+                        colEl.append(parEl);
+                        if (this.innerHTML === questions[currentQuestion - 1].answer) {
+                            parEl.innerHTML = "Correct!";
+                        } else {
+                            parEl.innerHTML = "Incorrect";
+                            timeRemaining = timeRemaining - 15;
+                            if (timeRemaining < 0) {
+                                timeRemaining = 0;
+                            }
+                            timeRemainingEl.setAttribute("value",timeRemaining);
+                        }
+                        currentQuestion++;
+                        if (currentQuestion>questions.length) {
+                            score = timeRemaining;
+                        }
+                        setTimeout(function() {
+                            // When an answer is chosen, pause the timer and show the result for 2 seconds before loading the next question
+                            if (currentQuestion>questions.length) {
+                                // Move to the results page
+                                quizContainerEl.setAttribute("class","container d-none");
+                                finalContainerEl.setAttribute("class","container");
+                                finalScoreEl.setAttribute("value",score);
+                            } else {
+                                generateQuestion(currentQuestion);
+                                clickTimeout = false;
+                                myInterval = setInterval(function() {
+                                    if (timeRemaining<1) {
+                                        clearInterval(myInterval);
+                                        quizContainerEl.setAttribute("class","container d-none");
+                                        finalContainerEl.setAttribute("class","container");
+                                        return;
+                                    }
+                                    timeRemaining = timeRemaining - 1;
+                                    timeRemainingEl.setAttribute("value",timeRemaining);
+                                },1000);
+                            }
+                        },2000);
+                    });
+                }
+                
+
+            }
+            function saveHighScore() {
+                let initialsEl = document.getElementById("initials-entry");
+                let newHighScore = {
+                    initials: initialsEl.value,
+                    highScore: score
+                };
+                console.log(newHighScore);
+                highScores.push(newHighScore);
+                console.log(highScores);
+                localStorage.setItem("scores",JSON.stringify(highScores));
+            }
+            submitButtonEl.addEventListener("click",saveHighScore);
+            
+            generateQuestion(currentQuestion);
+        }
+
+        startButtonEl.addEventListener("click",startQuiz);
+
+        highscoreButtonEl.addEventListener("click",function() {
+            landingContainerEl.setAttribute("class","container d-none");
+            quizContainerEl.setAttribute("class","container d-none");
+            finalContainerEl.setAttribute("class","container d-none");
+            highscoreContainerEl.setAttribute("class","container");
+            let colEl = document.getElementById("highscore-table");
+            for (i=0; i<highScores.length; i++) {
+                let rowEl = document.createElement("div");
+                rowEl.setAttribute("class","row mb-1");
+                colEl.append(rowEl);
+
+                let colEl2 = document.createElement("div");
+                colEl2.setAttribute("class","col-12 text-center");
+                rowEl.append(colEl2);
+
+                let parEl = document.createElement("div");
+                parEl.innerHTML = "Initials: " + highScores[i].initials + "   Score: " + highScores[i].highScore;
+                colEl2.append(parEl);
+            }
+        });
+    
+        
+    
+    
+    
+    
+    
+    
     }
-});
-
-function renderQuestionData() {
-    var question = questions[cursor]
-    choicesEl.innerHTML = "";
-    questionTextEl.textContent = "1. " + question.text;
-    // Display choices
-    question.choices.forEach(function (choice, index) {
-        var choiceItem = document.createElement("div");
-        choiceItem.setAttribute("class", "item");
-        choiceItem.setAttribute("data-id", index);
-        choiceItem.textContent = choice;
-        choicesEl.appendChild(choiceItem);
-    });
-}
-var cursor = 0;
-var score = 0;
-var timeLeft = 75;
-var interval;
-
-function initializeTimer() {
-    timeLeft = parseInt(timerEl.getAttribute("data-time"));
-    interval = setInterval(function () {
-        timeLeft--;
-        if (timeLeft > 0) {
-            timerEl.textContent = timeLeft;
-        } else {
-            console.log("END GAME INFINITY");
-            landingEl.style.display = "none";
-            // Show my first question
-            questionEl.style.display = "none";
-            endingEl.style.display = "flex";
-            clearInterval(interval);
-        }
-    }, 1000);
-}
-
-
-startBtn.addEventListener("click", function (event) {
-    landingEl.style.display = "none";
-    // Show my first question
-    questionEl.style.display = "flex";
-    renderQuestionData();
-    initializeTimer();
-
-    // Allow the user to select from one of the choices
-    // Provide a correct answer
-    // Determine if the choice is equal to the selected answer
-});
+    
+initQuiz();
